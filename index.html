@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWGoH Shard Donation Petition</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            overflow-y: scroll; /* Add this line to enable vertical scrolling */
+        }
+
+        nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+
+        .topnav {
+            display: flex;
+            justify-content: center;
+        }
+
+        .topnav a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .topnav a:hover {
+            background-color: #575757;
+        }
+
+        #intro {
+            padding: 20px;
+            text-align: center;
+        }
+
+        #hiww, #sign {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        #cookieConsent {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            display: none;
+        }
+
+        #cookieConsent button {
+            margin: 5px;
+            padding: 5px 10px;
+            background-color: #575757;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        #cookieConsent button:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="topnav">
+            <a class="active" href="#home">Home</a>
+            <a href="#hiww">How it would work</a>
+            <a href="#sign">Signing</a>
+        </div>
+    </nav>
+    <div id="intro">
+        <h1>Placeholder</h1>
+        <p style="text-align: left; font-size: 20px; padding-left: 10px;">
+            Introducing shard donations in Star Wars: Galaxy of Heroes would be a great idea! This feature could help newer players progress more quickly by allowing them to receive much-needed shards from more experienced players. It would also help with getting character shards and blueprints as those are hard to get earlier on in the game. It would foster a sense of community and collaboration while making the game more accessible for those just starting out. Overall, it could enhance the experience and encourage players to stick with the game longer.
+        </p>
+    </div>
+    <br>
+    <div id="hiww">
+        <h3>To donate shards to other players in Star Wars: Galaxy of Heroes, follow these simple steps:</h3>
+        <ol>
+            <li>Ally Requirement: Make sure the player you want to donate shards to has been your ally for at least a week. This helps build a stronger sense of community and helps prevent you from regretting your choice.</li>
+            <li>Access Ally Page: Go to your ally page and locate the ally you wish to gift. You’ll find the donation button next to the message button for that ally.</li>
+            <li>Enter Shard Amount: Click the donation button, then enter the number of shards you’d like to give. The minimum amount you can donate is 25 shards.</li>
+            <li>Confirm Donation: The game will prompt you to confirm the donation. It will display the amount of shards you’re about to give to the selected player, ensuring you double-check before proceeding.</li>
+            <li>Receiving Shards: Once confirmed, the recipient will receive the donated shards in their inbox, ready for them to use!</li>
+        </ol>
+    </div>
+    <br>
+    <div id="sign">
+        <h3>How to sign:</h3>
+        <p>Singing is the easiest part of the whole process. If you like the idea and would like to see it implemented in the game, then just read the next 2 steps.
+            All you need to do is insert your in-game username and your ally-code. Our goal is to get to 1000, so send this to anyone that you know plays Star Wars: Galaxy of Heroes!
+        </p>
+        <div id="votebox">
+            <div id="totalVotes" style="text-align: center; font-size: larger; font-weight: bolder;"></div>
+            <h4 id="show" style="text-align: center;"></h4>
+            <form id="form" style="padding-left: 10px;">
+                <label for="user">In-game username:</label><br>
+                <input type="text" id="user" name="user" required><br>
+                <label for="ac">Ally-Code (Must be 9 digits):</label><br>
+                <input type="text" id="ac" required pattern="\d{9}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
+                <div class="field" style="margin: 5px;">
+                    <input type="submit" id="submit" value="Submit">
+                </div>
+                <div id="duplicateMessage" style="color: red; padding-left: 10px;"></div>
+            </form>
+            <div id="output" style="padding-left: 10px;"></div>
+        </div>
+    </div>
+
+    <div id="cookieConsent">
+        <p>We use cookies to ensure you get the best experience on our website. Do you accept cookies?</p>
+        <button id="acceptCookies">Accept</button>
+        <button id="declineCookies">Decline</button>
+    </div>
+
+    <script>
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function checkDuplicate(ac) {
+            const entries = getCookie("entries");
+            if (entries) {
+                const entriesArray = JSON.parse(entries);
+                return entriesArray.some(entry => entry.ac === ac);
+            }
+            return false;
+        }
+
+        function addEntry(user, ac) {
+            const entries = getCookie("entries");
+            let entriesArray = [];
+            if (entries) {
+                entriesArray = JSON.parse(entries);
+            }
+            entriesArray.push({ user, ac });
+            setCookie("entries", JSON.stringify(entriesArray), 365);
+        }
+
+        function displayEntries() {
+            const entries = getCookie("entries");
+            const output = document.getElementById('output');
+            if (entries) {
+                const entriesArray = JSON.parse(entries);
+                entriesArray.forEach((entry, index) => {
+                    const entryElement = document.createElement('p');
+                    entryElement.textContent = `${index + 1}. Username: ${entry.user}, Ally-Code: ${entry.ac}`;
+                    output.appendChild(entryElement);
+                });
+                document.getElementById('totalVotes').textContent = `Total Votes: ${entriesArray.length}`;
+            }
+        }
+
+        document.getElementById('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const user = document.getElementById('user').value;
+            const ac = document.getElementById('ac').value;
+            const duplicateMessage = document.getElementById('duplicateMessage');
+            const show = document.getElementById('show');
+
+            // Check for duplicate entries
+            if (checkDuplicate(ac)) {
+                duplicateMessage.textContent = 'This ally code has already been used.';
+                return;
+            }
+
+            duplicateMessage.textContent = '';
+
+            // Add the entry
+            addEntry(user, ac);
+
+            // Update the output
+            const output = document.getElementById('output');
+            const entry = document.createElement('p');
+            entry.textContent = `${output.children.length + 1}. Username: ${user}, Ally-Code: ${ac}`;
+            output.appendChild(entry);
+
+            // Update the total votes
+            const total = output.children.length;
+            document.getElementById('totalVotes').textContent = `Total Votes: ${total}`;
+
+            // Show the latest entry
+            show.textContent = `Latest Entry: Username: ${user}, Ally-Code: ${ac}`;
+        });
+
+        // Display the total votes and all entries on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieConsent = getCookie('cookieConsent');
+            if (!cookieConsent) {
+                document.getElementById('cookieConsent').style.display = 'block';
+            } else if (cookieConsent === 'accepted') {
+                displayEntries();
+            }
+        });
+
+        document.getElementById('acceptCookies').addEventListener('click', function() {
+            setCookie('cookieConsent', 'accepted', 365);
+            document.getElementById('cookieConsent').style.display = 'none';
+            displayEntries();
+        });
+
+        document.getElementById('declineCookies').addEventListener('click', function() {
+            setCookie('cookieConsent', 'declined', 365);
+            document.getElementById('cookieConsent').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
